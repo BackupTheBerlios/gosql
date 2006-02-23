@@ -1,6 +1,6 @@
 {******************************************************************************
 	Program pozwlaj¹cy uruchomiæ dowolny skrypt SQL. Pod³¹czenie siê do serwera
-  SQL natêpuje poprzez MS ADO.
+  SQL natêpuje poprzez ODBC z wykorzystaniem MS ADO.
 
 	@Author Norbert Dudek
 	@Version 2005.11.25 Norbert Dudek
@@ -18,8 +18,8 @@ uses
   Classes,
   ADODB,
   JTools,
-  common in 'common.pas',
-  LogFile in '..\..\common\LogFile.pas';
+  common,
+  LogFile;
 
 procedure ShowHelp;
 begin
@@ -39,11 +39,6 @@ begin
     ' -help         print help (this message) and exit'
   );
 end;
-
-
-{function ExecSQL(FileName: string);
-begin
-end;}
 
 var
 	SQLText: TStringList;
@@ -99,7 +94,7 @@ begin
     ADOQuery := TADOQuery.Create(nil);
     try
      	if DoVerbose then
-      	writeln( ErrOutput, 'Run SQL command.' );
+      	writeln( Output, 'Run SQL command.' );
 			AddLog( 'Execute SQL command', SQLText.Text, mtInformation );
     	ADOQuery.ConnectionString := ConnectionString;
       ADOQuery.SQL.Assign( SQLText );

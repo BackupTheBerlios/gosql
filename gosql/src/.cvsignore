@@ -6,3 +6,5 @@
 *.dcu
 *.dcr
 *.drc
+*.log
+*.map
