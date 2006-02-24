@@ -76,7 +76,7 @@ begin
   if FileSpecs.Count = 0 then
   begin
   	writeln('ERROR: no files specified');
-    exit;
+    Halt(1);
   end;
   
   SQLText := TStringList.Create;
@@ -120,7 +120,7 @@ begin
   	    begin
         	ShowError( 'Error execute SQL command: ' +E.Message, [] ); 
 					AddLog( 'Execute SQL command', 'Error: ' +E.Message, mtError );
-          exit;
+          Halt(20);
         end;
       end;
 			AddLog( 'Execute SQL command', 'Run correctly.', mtInformation );
