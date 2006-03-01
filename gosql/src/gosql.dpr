@@ -4,6 +4,7 @@
 
 	@Author Norbert Dudek
 	@Version 2005.11.25 Norbert Dudek
+	@Version 2006.02.28 Norbert Dudek
 
 ******************************************************************************}
 
@@ -31,6 +32,7 @@ begin
 //    ' -server=name  default is (local)'#10 +
     ' -catalog=name	use thus catalog to initiate connection'#10 +
     ' -o            output result to stdout'#10 +
+    ' -timeout=time	timeout in s (default 15)'#10 +
 		''#10 +
     ' -v            verbose output'#10 +
     ' -l            enable logging to file'#10 +
@@ -42,11 +44,13 @@ end;
 
 var
 	SQLText: TStringList;
+  ADOConnection: TADOConnection;
   ADOQuery: TADOQuery;
   FileSpecs: TStringlist;
   i: integer;
   Path: string;
   DoVerbose: boolean;
+  Timeout: string;
 begin
 	Application.Initialize;
   if GetCmdSwitchValue( 'help', ['-', '/'], Path, true ) or (ParamCount < 1) then
@@ -65,6 +69,9 @@ begin
 
 	LogActive := GetCmdSwitchValue( 'l', ['-', '/'], Path, true );	// w³¹czenie zapisywania logu programu
 	DoVerbose := GetCmdSwitchValue( 'v', ['-', '/'], Path, true );	 
+  GetCmdSwitchValue( 'timeout', ['-', '/'], timeout, true );
+  if timeout = '' then
+  	timeout := '15';
 	FileSpecs := TStringlist.Create;
   if not GetCmdSwitchValue('@', [], Path, true) then
   begin
@@ -91,12 +98,15 @@ begin
         halt(10);
       end;
     end;
+    ADOConnection := TADOConnection.Create(nil);
+    ADOConnection.ConnectionString := ConnectionString;
+    ADOConnection.ConnectionTimeout := StrToInt( Timeout );
     ADOQuery := TADOQuery.Create(nil);
     try
      	if DoVerbose then
       	writeln( Output, 'Run SQL command.' );
 			AddLog( 'Execute SQL command', SQLText.Text, mtInformation );
-    	ADOQuery.ConnectionString := ConnectionString;
+    	ADOQuery.Connection := ADOConnection;
       ADOQuery.SQL.Assign( SQLText );
       try
         if GetCmdSwitchValue( 'o', ['-', '/'], Path, true ) then
@@ -126,6 +136,7 @@ begin
 			AddLog( 'Execute SQL command', 'Run correctly.', mtInformation );
     finally
     	ADOQuery.Free;
+      ADOConnection.Free;
     end;
   finally
   	SQLText.Free;

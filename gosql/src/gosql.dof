@@ -51,7 +51,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=dsn=VismaBusiness -o a.txt
+RunParams=-dsn=Dolmag -u=sa -catalog=master P:\dolmag\databases\afterimport.sql
 HostApplication=
 Launcher=
 UseLauncher=0
