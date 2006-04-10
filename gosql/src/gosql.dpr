@@ -30,9 +30,10 @@ begin
     ' -user=name    default is "sa"'#10 +
 //    ' -pwd=password default is blank'#10 +
 //    ' -server=name  default is (local)'#10 +
-    ' -catalog=name	use thus catalog to initiate connection'#10 +
+    ' -catalog=name use this catalog to initiate connection'#10 +
     ' -o            output result to stdout'#10 +
-    ' -timeout=time	timeout in s (default 15)'#10 +
+		' -timeout=time timeout in s (default 15)'#10 +
+		' -Q"query"     zapytanie SQL do wykonania'#10 +
 		''#10 +
     ' -v            verbose output'#10 +
     ' -l            enable logging to file'#10 +
@@ -47,10 +48,12 @@ var
   ADOConnection: TADOConnection;
   ADOQuery: TADOQuery;
   FileSpecs: TStringlist;
-  i: integer;
+	i: integer;
+	LogLevel: string;
   Path: string;
   DoVerbose: boolean;
-  Timeout: string;
+	Timeout: string;
+	SQLScript: string;
 begin
 	Application.Initialize;
   if GetCmdSwitchValue( 'help', ['-', '/'], Path, true ) or (ParamCount < 1) then
@@ -62,16 +65,17 @@ begin
   if GetCmdSwitchValue( 'version', ['-', '/'], Path, true ) then
   begin
   	writeln(
-    	'gosql 0.47 GNU GPL Copyright (C) 2005 Norbert Dudek'
+    	'gosql 0.49 GNU GPL Copyright (C) 2005 Norbert Dudek'
       );
     exit;
   end;
 
-	LogActive := GetCmdSwitchValue( 'l', ['-', '/'], Path, true );	// w³¹czenie zapisywania logu programu
+	LogActive := GetCmdSwitchValue( 'l', ['-', '/'], LogLevel, true );	// w³¹czenie zapisywania logu programu
 	DoVerbose := GetCmdSwitchValue( 'v', ['-', '/'], Path, true );	 
-  GetCmdSwitchValue( 'timeout', ['-', '/'], timeout, true );
-  if timeout = '' then
-  	timeout := '15';
+	GetCmdSwitchValue( 'timeout', ['-', '/'], timeout, true );
+	if timeout = '' then
+		timeout := '15';
+
 	FileSpecs := TStringlist.Create;
   if not GetCmdSwitchValue('@', [], Path, true) then
   begin
@@ -80,14 +84,17 @@ begin
       	FileSpecs.Add(ParamStr(i));
   end;
 
-  if FileSpecs.Count = 0 then
+  if (FileSpecs.Count = 0) and (not GetCmdSwitchValue( 'Q', ['-', '/'], SQLScript, true )) then
   begin
   	writeln('ERROR: no files specified');
     Halt(1);
   end;
   
-  SQLText := TStringList.Create;
-  try
+	SQLText := TStringList.Create;
+	try
+		if GetCmdSwitchValue( 'Q', ['-', '/'], SQLScript, true ) then
+			SQLText.Text := SQLScript
+		else
   	try
 	  	SQLText.LoadFromFile( ParamStr( ParamCount ) );
     except
@@ -99,9 +106,10 @@ begin
       end;
     end;
     ADOConnection := TADOConnection.Create(nil);
-    ADOConnection.ConnectionString := ConnectionString;
+		ADOConnection.ConnectionString := ConnectionString;
     ADOConnection.ConnectionTimeout := StrToInt( Timeout );
-    ADOQuery := TADOQuery.Create(nil);
+		ADOConnection.CommandTimeout := StrToInt( Timeout );
+		ADOQuery := TADOQuery.Create(nil);
     try
      	if DoVerbose then
       	writeln( Output, 'Run SQL command.' );
@@ -128,6 +136,7 @@ begin
       except
 	    	on E: Exception do
   	    begin
+	      	writeln( errOutput, 'Error execute SQL command: ' +E.Message );
         	ShowError( 'Error execute SQL command: ' +E.Message, [] ); 
 					AddLog( 'Execute SQL command', 'Error: ' +E.Message, mtError );
           Halt(20);

@@ -27,6 +27,18 @@ begin
 	  else
   		Rewrite( OutFile );
 		try
+    	// replace #13 to #32
+    	while pos( #13, Message ) > 0 do
+      begin
+      	insert( ' ', Message, pos( #13, Message ) );
+        Delete( Message, pos( #13, Message ), 1 );
+      end;
+    	// replace #10 to #32
+    	while pos( #10, Message ) > 0 do
+      begin
+      	insert( ' ', Message, pos( #10, Message ) );
+        Delete( Message, pos( #10, Message ), 1 );
+      end;
   	  WriteLn( OutFile, DateToStr( now ) +#9 +TimeToStr( now ) +#9 +Header +#9 +Message );
 	  finally
 		  CloseFile( OutFile );
