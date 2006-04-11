@@ -26,11 +26,11 @@ begin
 	GetCmdSwitchValue( 'user', ['-', '/'], UserID, true );
 //	GetCmdSwitchValue( 'pwd', ['-', '/'], UserID, true );
 	GetCmdSwitchValue( 'catalog', ['-', '/'], InitialCatalog, true );
-//	result := 'Provider=MSDASQL.1;Persist Security Info=False;User ID' +UserID +';Data Source' +DataSource +';Initial Catalog' +InitialCatalog;
+	result := 'Provider=MSDASQL.1;Persist Security Info=False;User ID' +UserID +';Data Source' +DataSource +';Initial Catalog' +InitialCatalog;
 
-	result := format( 'Provider=SQLOLEDB.1;Persist Security Info=False;User ID=%s;Initial Catalog=%s;Data Source=%s;Use Procedure for Prepare=1;Auto Translate=True;Packet Size=4096;Workstation ID=VMWARE2000;' +
+{	result := format( 'Provider=SQLOLEDB.1;Persist Security Info=False;User ID=%s;Initial Catalog=%s;Data Source=%s;Use Procedure for Prepare=1;Auto Translate=True;Packet Size=4096;Workstation ID=VMWARE2000;' +
 		'Use Encryption for Data=False;Tag with column collation when possible=False',
-		[UserID, InitialCatalog, DataSource] );
+		[UserID, InitialCatalog, DataSource] );}
 end;
 
 

@@ -107,8 +107,8 @@ begin
     end;
     ADOConnection := TADOConnection.Create(nil);
 		ADOConnection.ConnectionString := ConnectionString;
-    ADOConnection.ConnectionTimeout := StrToInt( Timeout );
-		ADOConnection.CommandTimeout := StrToInt( Timeout );
+		ADOConnection.ConnectionTimeout := StrToInt( copy( Timeout, 2, length( Timeout ) ) );
+		ADOConnection.CommandTimeout := StrToInt( copy( Timeout, 2, length( Timeout ) ) );
 		ADOQuery := TADOQuery.Create(nil);
     try
      	if DoVerbose then
@@ -145,10 +145,12 @@ begin
 			AddLog( 'Execute SQL command', 'Run correctly.', mtInformation );
     finally
     	ADOQuery.Free;
-      ADOConnection.Free;
+			ADOConnection.Free;
     end;
   finally
   	SQLText.Free;
   end;
   Halt(0);
 end.
+
+

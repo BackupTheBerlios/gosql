@@ -51,7 +51,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-dsn=Dolmag -u=sa -catalog=d0001 -Q="select * from Ord"
+RunParams=-v3 -l -dsn=VismaBusiness -user=sa -catalog=F0001 -l -timeout=120 -o "P:\transman\sql\month_StcBal.sql"
 HostApplication=
 Launcher=
 UseLauncher=0
